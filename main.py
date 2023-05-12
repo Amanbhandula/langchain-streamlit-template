@@ -17,8 +17,9 @@ Current conversation:
 Human: {input}
 AI Assistant:"""
 PROMPT = PromptTemplate(
-    input_variables=["AI Assitant", "user_input"], template=template
+    input_variables={"AI Assistant": "", "user_input": ""}, template=template
 )
+
 
 
 
