@@ -17,21 +17,21 @@ Current conversation:
 Human: {input}
 AI Assistant:"""
 PROMPT = PromptTemplate(
-    input_variables=["history", "input"], template=template
+    input_variables=["AI Assitant", "user_input"], template=template
 )
-conversation = ConversationChain(
-    prompt=PROMPT,
-    llm=llm, 
-    verbose=True, 
-    memory=ConversationBufferMemory(ai_prefix="AI Assistant")
-)
+
 
 
 
 def load_chain():
     """Logic for loading the chain you want to use should go here."""
     llm = OpenAI(temperature=0)
-    chain = ConversationChain(llm=llm)
+    chain = ConversationChain(
+    prompt=PROMPT,
+    llm=llm, 
+    verbose=True, 
+    memory=ConversationBufferMemory(ai_prefix="AI Assistant")
+)
     return chain
 
 chain = load_chain()
