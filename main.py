@@ -8,15 +8,16 @@ from langchain.llms import OpenAI
 
 def load_chain():
     """Logic for loading the chain you want to use should go here."""
+    prompt = "Act as a mental health chatbot that communicates with users on WhatsApp, asking them relevant questions one at a time, similar to how a psychologist would. Engage in a conversation by asking appropriate questions to understand their mental state, emotions, and concerns, while providing support and empathy."
     llm = OpenAI(temperature=0)
-    chain = ConversationChain(llm=llm)
+    chain = ConversationChain(llm=llm, prompt=prompt)
     return chain
 
 chain = load_chain()
 
 # From here down is all the StreamLit UI.
-st.set_page_config(page_title="LangChain Demo", page_icon=":robot:")
-st.header("LangChain Demo")
+st.set_page_config(page_title="Farmako Mental Health Bot (Beta)", page_icon=":robot:")
+st.header("Farmako AI Mental Health Bot")
 
 if "generated" not in st.session_state:
     st.session_state["generated"] = []
@@ -26,7 +27,7 @@ if "past" not in st.session_state:
 
 
 def get_text():
-    input_text = st.text_input("You: ", "Hello, how are you?", key="input")
+    input_text = st.text_input("You: ", "Hello, I am a mental health bot. Happy to help you today!", key="input")
     return input_text
 
 
