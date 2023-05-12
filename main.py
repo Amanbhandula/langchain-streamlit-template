@@ -33,7 +33,7 @@ def get_text():
 user_input = get_text()
 
 if user_input:
-    output = chain.run(input=user_input)
+    output = chain.run(input=user_input, prompt = "Act as a mental health chatbot that communicates with users on WhatsApp, asking them relevant questions one at a time, similar to how a psychologist would. Engage in a conversation by asking appropriate questions to understand their mental state, emotions, and concerns, while providing support and empathy.")
 
     st.session_state.past.append(user_input)
     st.session_state.generated.append(output)
