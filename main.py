@@ -50,15 +50,21 @@ if "past" not in st.session_state:
 
 def get_text():
     input_text = st.text_input("You: ", "", key="input")
-    return input_text
-
+    submit_button = st.button("Send")
+    if submit_button:
+        user_input = input_text
+        st.session_state["input"] = user_input
+        st.text_input("You: ", "", key="input", value="")  # Clear the input field
+    else:
+        user_input = None
+    return user_input
 
 user_input = get_text()
 
 if user_input:
-    output = chain.run(input=user_input)
+    output = chain.run(input=st.session_state["input"])
 
-    st.session_state.past.append(user_input)
+    st.session_state.past.append(st.session_state["input"])
     st.session_state.generated.append(output)
 
 if st.session_state["generated"]:
