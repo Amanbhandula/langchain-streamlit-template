@@ -38,8 +38,8 @@ def load_chain():
 chain = load_chain()
 
 # From here down is all the StreamLit UI.
-st.set_page_config(page_title="LangChain Demo", page_icon=":robot:")
-st.header("LangChain Demo")
+st.set_page_config(page_title="Beta Version", page_icon=":robot:")
+st.header("Farmako Mental Health Bot")
 
 if "generated" not in st.session_state:
     st.session_state["generated"] = []
@@ -49,7 +49,7 @@ if "past" not in st.session_state:
 
 
 def get_text():
-    input_text = st.text_input("You: ", "Hello, how are you?", key="input")
+    input_text = st.text_input("You: ", "", key="input")
     return input_text
 
 
