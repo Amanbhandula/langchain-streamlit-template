@@ -4,42 +4,42 @@ from streamlit_chat import message
 
 from langchain.chains import ConversationChain
 from langchain.llms import OpenAI
-from langchain.prompts.prompt import PromptTemplate
-
-
-
-# Now we can override it and set it to "AI Assistant"
-
-template = """The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know.
-
-Current conversation:
-{memory}
-Human: {input}
-AI Assistant:"""
-PROMPT = PromptTemplate(
-    input_variables={"memory": "", "input": ""}, template=template
-)
-
 
 
 
 
 def load_chain():
     """Logic for loading the chain you want to use should go here."""
+    from langchain.prompts.prompt import PromptTemplate
+    from langchain.memory import ConversationBufferMemory
+
     llm = OpenAI(temperature=0)
+
+    # Define the mental health bot prompt
+    template = """Act as a mental health chatbot that communicates with users on WhatsApp, asking them relevant questions one at a time, similar to how a psychologist would. Engage in a conversation by asking appropriate questions to understand their mental state, emotions, and concerns, while providing support and empathy.
+
+    Current conversation:
+    {history}
+    Human: {input}
+    AI Assistant:"""
+    PROMPT = PromptTemplate(
+        input_variables=["history", "input"], template=template
+    )
+
     chain = ConversationChain(
-    prompt=PROMPT,
-    llm=llm, 
-    verbose=True, 
-    memory=ConversationBufferMemory(ai_prefix="AI Assistant")
-)
+        prompt=PROMPT,
+        llm=llm, 
+        verbose=True, 
+        memory=ConversationBufferMemory(ai_prefix="AI Assistant")
+    )
+
     return chain
 
 chain = load_chain()
 
 # From here down is all the StreamLit UI.
-st.set_page_config(page_title="Farmako Mental Health Bot (Beta)", page_icon=":robot:")
-st.header("Farmako AI Mental Health Bot")
+st.set_page_config(page_title="LangChain Demo", page_icon=":robot:")
+st.header("LangChain Demo")
 
 if "generated" not in st.session_state:
     st.session_state["generated"] = []
@@ -49,14 +49,14 @@ if "past" not in st.session_state:
 
 
 def get_text():
-    input_text = st.text_input("You: ", "", key="input")
+    input_text = st.text_input("You: ", "Hello, how are you?", key="input")
     return input_text
 
 
 user_input = get_text()
 
 if user_input:
-    output = chain.run(input=user_input, prompt = "Act as a mental health chatbot that communicates with users on WhatsApp, asking them relevant questions one at a time, similar to how a psychologist would. Engage in a conversation by asking appropriate questions to understand their mental state, emotions, and concerns, while providing support and empathy.")
+    output = chain.run(input=user_input)
 
     st.session_state.past.append(user_input)
     st.session_state.generated.append(output)
