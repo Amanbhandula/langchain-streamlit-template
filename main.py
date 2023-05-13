@@ -5,6 +5,9 @@ from streamlit_chat import message
 from langchain.chains import ConversationChain
 from langchain.llms import OpenAI
 
+
+
+
 def load_chain():
     """Logic for loading the chain you want to use should go here."""
     from langchain.prompts.prompt import PromptTemplate
@@ -44,17 +47,11 @@ if "generated" not in st.session_state:
 if "past" not in st.session_state:
     st.session_state["past"] = []
 
-# Create a placeholder for the input box
-input_box = st.empty()
-
-if st.session_state["generated"]:
-    for i in range(len(st.session_state["generated"]) - 1, -1, -1):
-        message(st.session_state["generated"][i], key=str(i))
-        message(st.session_state["past"][i], is_user=True, key=str(i) + "_user")
 
 def get_text():
-    input_text = input_box.text_input("You: ", "", key="input")
+    input_text = st.text_input("You: ", "", key="input")
     return input_text
+
 
 user_input = get_text()
 
@@ -63,3 +60,9 @@ if user_input:
 
     st.session_state.past.append(user_input)
     st.session_state.generated.append(output)
+
+if st.session_state["generated"]:
+
+    for i in range(len(st.session_state["generated"]) - 1, -1, -1):
+        message(st.session_state["generated"][i], key=str(i))
+        message(st.session_state["past"][i], is_user=True, key=str(i) + "_user")
