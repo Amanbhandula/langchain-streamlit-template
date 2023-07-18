@@ -1,8 +1,5 @@
 """Python file to serve as the frontend"""
 import streamlit as st
-import json
-from streamlit_chat import message
-
 from langchain.chains import ConversationChain
 from langchain.llms import OpenAI
 
@@ -40,34 +37,19 @@ chain = load_chain()
 st.set_page_config(page_title="Beta Version", page_icon=":robot:")
 st.header("Farmako Medical History Chat")
 
-if "generated" not in st.session_state:
-    st.session_state["generated"] = []
+# Initialize session state
+if 'medical_history' not in st.session_state:
+    st.session_state['medical_history'] = ''
 
-if "past" not in st.session_state:
-    st.session_state["past"] = []
+medical_history = st.text_area("Medical History: ", value=st.session_state['medical_history'], key="medical_history")
 
-def get_medical_history():
-    medical_history = st.text_area("Medical History: ", "", key="medical_history")
-    submit_button = st.button("Save Medical History", key="save_medical_history")
-    if submit_button:
-        st.success("Medical history saved!")
-    return medical_history
+if st.button("Save Medical History", key="save_medical_history"):
+    st.session_state['medical_history'] = medical_history
+    st.success("Medical history saved!")
 
-def get_text():
-    input_text = st.text_input("You: ", "", key="input")
-    return input_text
+user_input = st.text_input("You: ", "", key="input")
 
-medical_history = get_medical_history()
-user_input = get_text()
-
-if user_input and medical_history:
-    combined_input = f"Medical history: {medical_history}. {user_input}"
+if user_input and st.session_state['medical_history']:
+    combined_input = f"Medical history: {st.session_state['medical_history']}. {user_input}"
     output = chain.run(input=combined_input)
-
-    st.session_state.past.append(combined_input)
-    st.session_state.generated.append(output)
-
-if st.session_state["generated"]:
-    for i in range(len(st.session_state["generated"]) - 1, -1, -1):
-        message(st.session_state["generated"][i], key=str(i))
-        message(st.session_state["past"][i], is_user=True, key=str(i) + "_user")
+    st.write(output)
