@@ -1,5 +1,5 @@
-"""Python file to serve as the frontend"""
 import streamlit as st
+import json
 from streamlit_chat import message
 
 from langchain.chains import ConversationChain
@@ -45,7 +45,7 @@ if "past" not in st.session_state:
     st.session_state["past"] = []
 
 def get_medical_history():
-    medical_history_text = st.text_input("Medical History: ", "", key="medical_history")
+    medical_history_text = st.text_area("Medical History (in JSON format): ", "", key="medical_history")
     return medical_history_text
 
 medical_history = get_medical_history()
@@ -56,8 +56,14 @@ def get_text():
 
 user_input = get_text()
 
-if user_input and medical_history:
-    output = chain.run(input=user_input, medical_history=medical_history)
+# Convert the JSON medical history to a Python dictionary
+if medical_history:
+    medical_history_dict = json.loads(medical_history)
+else:
+    medical_history_dict = None
+
+if user_input and medical_history_dict:
+    output = chain.run(input=user_input, medical_history=medical_history_dict)
 
     st.session_state.past.append(user_input)
     st.session_state.generated.append(output)
