@@ -1,4 +1,3 @@
-"""Python file to serve as the frontend"""
 import streamlit as st
 from langchain.chains import ConversationChain
 from langchain.llms import OpenAI
@@ -10,7 +9,6 @@ def load_chain():
 
     llm = OpenAI(temperature=0)
 
-    # Define the medical chatbot prompt
     template = """
     You are an advanced healthcare assistant. Your function is to provide support for doctors by offering appropriate responses to patient inquiries based on their comprehensive medical history.
     
@@ -33,11 +31,9 @@ def load_chain():
 
 chain = load_chain()
 
-# From here down is all the StreamLit UI.
 st.set_page_config(page_title="Beta Version", page_icon=":robot:")
 st.header("Farmako Medical History Chat")
 
-# Initialize session state
 if 'medical_history' not in st.session_state:
     st.session_state['medical_history'] = ''
 
@@ -45,9 +41,9 @@ medical_history = st.text_area("Medical History: ", value=st.session_state['medi
 
 if st.button("Save Medical History", key="save_medical_history"):
     st.session_state['medical_history'] = medical_history
-    st.success("Medical history saved!")
+    st.text('Medical history saved!')
 
-user_input = st.text_input("You: ", "", key="input")
+user_input = st.text_input("You: ", "", key="user_input")
 
 if user_input and st.session_state['medical_history']:
     combined_input = f"Medical history: {st.session_state['medical_history']}. {user_input}"
