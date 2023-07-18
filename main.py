@@ -34,18 +34,11 @@ chain = load_chain()
 st.set_page_config(page_title="Beta Version", page_icon=":robot:")
 st.header("Farmako Medical History Chat")
 
-if 'medical_history' not in st.session_state:
-    st.session_state['medical_history'] = ''
-
-medical_history = st.text_area("Medical History: ", value=st.session_state['medical_history'], key="medical_history")
-
-if st.button("Save Medical History", key="save_medical_history"):
-    st.session_state.medical_history = medical_history
-    st.success('Medical history saved!')
-
+medical_history = st.text_area("Medical History: ", value='', key="medical_history")
 user_input = st.text_input("You: ", "", key="user_input")
 
-if user_input and st.session_state['medical_history']:
-    combined_input = f"Medical history: {st.session_state['medical_history']}. {user_input}"
-    output = chain.run(input=combined_input)
-    st.write(output)
+if st.button("Submit"):
+    if medical_history and user_input:
+        combined_input = f"Medical history: {medical_history}. {user_input}"
+        output = chain.run(input=combined_input)
+        st.write(output)
