@@ -40,8 +40,8 @@ if 'medical_history' not in st.session_state:
 medical_history = st.text_area("Medical History: ", value=st.session_state['medical_history'], key="medical_history")
 
 if st.button("Save Medical History", key="save_medical_history"):
-    st.session_state['medical_history'] = medical_history
-    st.text('Medical history saved!')
+    st.session_state.medical_history = medical_history
+    st.success('Medical history saved!')
 
 user_input = st.text_input("You: ", "", key="user_input")
 
