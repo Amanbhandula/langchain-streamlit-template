@@ -46,16 +46,19 @@ if "generated" not in st.session_state:
 if "past" not in st.session_state:
     st.session_state["past"] = []
 
+def get_medical_history():
+    medical_history = st.text_area("Medical History: ", "", key="medical_history")
+    submit_button = st.button("Save Medical History", key="save_medical_history")
+    if submit_button:
+        st.success("Medical history saved!")
+    return medical_history
+
 def get_text():
     input_text = st.text_input("You: ", "", key="input")
     return input_text
 
-def get_medical_history():
-    medical_history = st.text_area("Medical History: ", "", key="medical_history")
-    return medical_history
-
-user_input = get_text()
 medical_history = get_medical_history()
+user_input = get_text()
 
 if user_input and medical_history:
     combined_input = f"Medical history: {medical_history}. {user_input}"
