@@ -1,4 +1,8 @@
+"""Python file to serve as the frontend"""
 import streamlit as st
+from streamlit_chat import message
+import json
+
 from langchain.chains import ConversationChain
 from langchain.llms import OpenAI
 
@@ -9,15 +13,16 @@ def load_chain():
 
     llm = OpenAI(temperature=0)
 
-    template = """
-    You are an advanced healthcare assistant. Your function is to provide support for doctors by offering appropriate responses to patient inquiries based on their comprehensive medical history.
+    template = """Act as an advanced healthcare assistant that communicates with users based on their comprehensive medical history. This includes offering advice and recommendations on over-the-counter medications, tests, consultations with specialist doctors, or possible nutritional supplements if needed. Your responses are edited and approved by doctors before being sent to patients.
+
+    Medical history:
+    {medical_history}
     
-    Current conversation:
-    {history}
     Human: {input}
     AI Assistant:"""
+    
     PROMPT = PromptTemplate(
-        input_variables=["history", "input"], template=template
+        input_variables=["medical_history", "input"], template=template
     )
 
     chain = ConversationChain(
@@ -31,14 +36,37 @@ def load_chain():
 
 chain = load_chain()
 
+# From here down is all the StreamLit UI.
 st.set_page_config(page_title="Beta Version", page_icon=":robot:")
-st.header("Farmako Medical History Chat")
+st.header("Farmako Chat with your Medical History")
 
-medical_history = st.text_area("Medical History: ", value='', key="medical_history")
-user_input = st.text_input("You: ", "", key="user_input")
+if "generated" not in st.session_state:
+    st.session_state["generated"] = []
 
-if st.button("Submit"):
-    if medical_history and user_input:
-        combined_input = f"Medical history: {medical_history}. {user_input}"
-        output = chain.run(input=combined_input)
-        st.write(output)
+if "past" not in st.session_state:
+    st.session_state["past"] = []
+
+
+def get_text():
+    input_text = st.text_input("You: ", "", key="input")
+    return input_text
+
+
+def get_medical_history():
+    medical_history = st.text_area("Medical History: ", "", key="medical_history")
+    return medical_history
+
+user_input = get_text()
+medical_history = get_medical_history()
+
+if user_input and medical_history:
+    output = chain.run(input={"medical_history": medical_history, "input": user_input})
+
+    st.session_state.past.append(user_input)
+    st.session_state.generated.append(output)
+
+if st.session_state["generated"]:
+
+    for i in range(len(st.session_state["generated"]) - 1, -1, -1):
+        message(st.session_state["generated"][i], key=str(i))
+        message(st.session_state["past"][i], is_user=True, key=str(i) + "_user")
