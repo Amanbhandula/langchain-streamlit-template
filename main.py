@@ -77,7 +77,7 @@ if "medical_history" not in st.session_state:
     st.session_state["medical_history"] = ""
 
 def get_text():
-    input_text = st.text_input("User Input: ", "", key="input")
+    input_text = st.text_input("You: ", "", key="input")
     return input_text
 
 def get_medical_history():
