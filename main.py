@@ -3,7 +3,7 @@ import json
 import streamlit as st
 from streamlit_chat import message
 
-from langchain.chains import ConversationChain
+from langchain.chains import ConversationChain, LLMChain
 from langchain.llms import OpenAI
 
 def load_chain():
@@ -38,7 +38,6 @@ def load_chain():
 def load_history_chain():
     """Logic for loading the chain that generates a medical history"""
     from langchain.prompts.prompt import PromptTemplate
-    from langchain.memory import ConversationBufferMemory
 
     llm = OpenAI(temperature=0)
 
@@ -51,11 +50,9 @@ def load_history_chain():
         input_variables=[], template=template
     )
 
-    chain = ConversationChain(
+    chain = LLMChain(
         prompt=PROMPT,
-        llm=llm, 
-        verbose=True, 
-        memory=ConversationBufferMemory(ai_prefix="AI System")
+        llm=llm
     )
 
     return chain
