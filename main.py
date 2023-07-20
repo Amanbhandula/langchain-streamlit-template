@@ -1,4 +1,6 @@
 import random
+from langchain.llms import OpenAI
+
 
 def load_history_chain():
     """Logic for loading the chain you want to use should go here."""
