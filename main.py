@@ -1,9 +1,42 @@
-import random
+"""Python file to serve as the frontend"""
+import json
+import streamlit as st
+from streamlit_chat import message
+
+from langchain.chains import ConversationChain
 from langchain.llms import OpenAI
 
+def load_chain():
+    """Logic for loading the chain you want to use should go here."""
+    from langchain.prompts.prompt import PromptTemplate
+    from langchain.memory import ConversationBufferMemory
+
+    llm = OpenAI(temperature=0)
+
+    # Define the medical chatbot prompt
+    template = """
+    You are an advanced healthcare assistant. Your function is to provide support for doctors by offering appropriate responses to patient inquiries based on their comprehensive medical history.
+    
+    Current conversation:
+    {history}
+    Human: {input}
+    AI Assistant:"""
+    
+    PROMPT = PromptTemplate(
+        input_variables=["history", "input"], template=template
+    )
+
+    chain = ConversationChain(
+        prompt=PROMPT,
+        llm=llm, 
+        verbose=True, 
+        memory=ConversationBufferMemory(ai_prefix="AI Assistant")
+    )
+
+    return chain
 
 def load_history_chain():
-    """Logic for loading the chain you want to use should go here."""
+    """Logic for loading the chain that generates a medical history"""
     from langchain.prompts.prompt import PromptTemplate
     from langchain.memory import ConversationBufferMemory
 
@@ -13,6 +46,7 @@ def load_history_chain():
     template = """
     You are an AI system that generates random medical history data. Please generate a comprehensive medical history JSON for a random patient.
     """
+    
     PROMPT = PromptTemplate(
         input_variables=[], template=template
     )
@@ -26,6 +60,7 @@ def load_history_chain():
 
     return chain
 
+chain = load_chain()
 history_chain = load_history_chain()
 
 # From here down is all the StreamLit UI.
@@ -39,20 +74,19 @@ if "past" not in st.session_state:
     st.session_state["past"] = []
 
 if "medical_history" not in st.session_state:
-    st.session_state["medical_history"] = []
+    st.session_state["medical_history"] = ""
 
 def get_text():
-    input_text = st.text_input("You: ", "", key="input")
+    input_text = st.text_input("User Input: ", "", key="input")
     return input_text
 
 def get_medical_history():
     if not st.session_state["medical_history"]:
         # Generate a new medical history
         output = history_chain.run(input="")
-        st.session_state["medical_history"].append(json.loads(output))
+        st.session_state["medical_history"] = output
 
-    medical_history = st.session_state["medical_history"][-1]
-    medical_history = json.dumps(medical_history, indent=4)  # For pretty printing
+    medical_history = st.session_state["medical_history"]
     return medical_history
 
 user_input = get_text()
